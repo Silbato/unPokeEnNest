@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, HttpCode, ParseUUIDPipe, Query } from '@nestjs/common';
 import { PokemonService } from './pokemon.service';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id/parse-mongo-id.pipe';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+
 
 @Controller('pokemon')
 export class PokemonController {
@@ -15,8 +17,9 @@ export class PokemonController {
   }
 
   @Get()
-  findAll() {
-    return this.pokemonService.findAll();
+  findAll(@Query() paginationDto:PaginationDto) {
+    /**Aca hay que ver, ya que el limit lo pasa como string el @Query pero lo tenemos number en el DTO */
+    return this.pokemonService.findAll(paginationDto);
   }
 
   @Get(':idRecibido')

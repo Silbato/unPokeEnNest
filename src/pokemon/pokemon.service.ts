@@ -4,16 +4,26 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { Model, isValidObjectId } from 'mongoose';
 import { Pokemon } from './entities/pokemon.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokemonService {
+
+  private defaultLimit:number;
 
   /**Creamos la injeccion para que cree en la BBDD, lo obtiene del pokemon entity que es el modelo a BBDD */
   constructor(
     /**Aca el name es de la extrucutura Pokemon no de su atributo */
     @InjectModel(Pokemon.name)
-    private readonly pokemonModel:Model<Pokemon>){
-
+    private readonly pokemonModel:Model<Pokemon>,
+    /**Importamos la dependencia de nestjs para obtener el env.config.ts  pero hay q importarlo en modulos de pokemon.module*/
+    private readonly configService:ConfigService
+    ){
+      /**ACa el <number> NO hace CONVERSIONNN, es notacional unicamente
+       * defaiultLimit esta asi en env.config.ts es como un getItem de clave-valor
+       */
+      this.defaultLimit=configService.get<number>('defaultLimit');
   }
 
   async create(createPokemonDto: CreatePokemonDto) {
@@ -41,8 +51,10 @@ export class PokemonService {
 
   }
 
-  async findAll() {
-    const pokemonNuevo=await this.pokemonModel.find();
+  async findAll(paginationDto:PaginationDto) {
+    const {limit=this.defaultLimit,offset=0}=paginationDto;
+    /**Usamos los paramertos pasados en paginationDTO y ordenamos campo no y sacamos campo -__v */
+    const pokemonNuevo=await this.pokemonModel.find().limit(limit).skip(offset).sort({no:1}).select('-__v');
     return pokemonNuevo;
   }
 
