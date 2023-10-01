@@ -4,7 +4,9 @@
 Nest
 MongoDB
 ```
+
 Pasos
+
 ```
 1.Clonar repo.
 2.Ejecutar:
@@ -19,3 +21,4 @@ yarn start:dev
 7.Ejecutar: yarn start:dev
 8.Seed BBDD
 localhost:3000/api/v2/seed
+```
